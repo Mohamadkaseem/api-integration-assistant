@@ -1,0 +1,9 @@
+# Web framework that turns Python functions into REST API endpoints
+fastapi==0.165.0
+# The server that actually runs the FastAPI app
+uvicorn[standard]==0.54.0
+# Reads settings from environment variables / .env file, with validation
+pydantic-settings==2.16.3
+# --- Testing tools ---
+pytest==9.2.0
+httpx==0.28.1
