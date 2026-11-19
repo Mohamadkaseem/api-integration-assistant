@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** Milestone 1 built and verified in the build environment. Waiting for you to run it locally.
+**Current state:** Milestone 1 complete and verified on the local Windows machine (2026-11-19). Next: Milestone 2.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -10,7 +10,7 @@
 - [x] Next.js + TypeScript + Tailwind UI with sidebar for all 9 features
 - [x] Dashboard with live backend status
 - [x] Research report (`docs/RESEARCH.md`) and plan (`docs/PLAN.md`)
-- [ ] **You:** run it locally and see the green "Connected" dot
+- [x] Run locally on Windows: tests pass, green "Connected" dot
 
 ## M2 — Projects & SQLite
 - [ ] SQLModel + SQLite database file
