@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** Milestone 2 built and verified in the build environment. Waiting for you to run it locally.
+**Current state:** Milestone 2 complete and verified on Windows. Working on Milestone 3.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -12,7 +12,7 @@
 - [x] Research report (`docs/RESEARCH.md`) and plan (`docs/PLAN.md`)
 - [x] Run locally on Windows: tests pass, green "Connected" dot
 
-## M2 — Projects & SQLite ✅ (built & verified in the build environment)
+## M2 — Projects & SQLite ✅
 - [x] SQLModel + SQLite database file (`backend/data/app.db`, not committed to Git)
 - [x] Project model (name, source/target app, requirement, status, notes, timestamps)
 - [x] API: list / create / view / edit / delete (`/api/projects`)
@@ -21,7 +21,7 @@
 - [x] Projects page, "New project" form, detail page with Edit and Delete (delete asks first)
 - [x] Dashboard "Integration projects" count is real
 - [x] Fixed test warning (httpx → httpx2)
-- [ ] **You:** `git pull`, install new libraries, restart, try create/edit/delete
+- [x] Verified on Windows: create / edit / delete / data survives restart
 
 ## M3 — AI + Requirement Analyzer
 ## M4 — Request Builder & API testing
