@@ -15,9 +15,11 @@ class Settings(BaseSettings):
 
     app_name: str = "My API Integration Assistant"
     environment: str = "development"
-    version: str = "0.1.0"
+    version: str = "0.2.0"
     # Stored as a comma-separated string, e.g. "http://localhost:3000,https://app.example.com"
     cors_origins: str = "http://localhost:3000"
+    # SQLite = the whole database is one file. "./data/app.db" is relative to the backend folder.
+    database_url: str = "sqlite:///./data/app.db"
 
     @property
     def cors_origin_list(self) -> list[str]:

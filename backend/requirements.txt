@@ -4,6 +4,9 @@ fastapi==0.165.0
 uvicorn[standard]==0.54.0
 # Reads settings from environment variables / .env file, with validation
 pydantic-settings==2.16.3
+# Database toolkit: Python classes <-> SQLite tables (built on SQLAlchemy + Pydantic)
+sqlmodel==0.0.50
 # --- Testing tools ---
 pytest==9.2.0
-httpx==0.28.1
+# HTTP client used by FastAPI's TestClient in our tests
+httpx2==2.16.2
