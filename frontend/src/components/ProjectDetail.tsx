@@ -73,7 +73,13 @@ export function ProjectDetail() {
                 </span>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/requirements?project=${project.id}`}
+                className="rounded-md border border-indigo-300 bg-white px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50"
+              >
+                Analyze requirement
+              </Link>
               <button
                 onClick={() => setEditing(true)}
                 className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"

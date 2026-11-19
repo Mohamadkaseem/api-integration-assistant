@@ -87,3 +87,57 @@ export const updateProject = (id: number, data: Partial<ProjectInput>) =>
 
 export const deleteProject = (id: number) =>
   request<void>(`/api/projects/${id}`, { method: "DELETE" });
+
+// ---------- AI / Requirement analysis ----------
+
+export type AIStatus = { configured: boolean; provider: string; model: string };
+
+export type Clarification = { question: string; answer: string };
+
+export type RequirementAnalysis = {
+  summary: string;
+  trigger: {
+    event: string;
+    app: string;
+    detection: "webhook" | "polling" | "scheduled" | "manual" | "unknown";
+    notes: string;
+  };
+  source_app: string;
+  target_apps: string[];
+  steps: {
+    order: number;
+    app: string;
+    action: string;
+    description: string;
+    condition: string;
+    waits_for: string;
+  }[];
+  data_to_transfer: { name: string; from_app: string; to_app: string; notes: string }[];
+  conditions: string[];
+  status_updates: string[];
+  expected_outcome: string;
+  assumptions: string[];
+  clarification_questions: { question: string; why_it_matters: string; priority: "high" | "medium" | "low" }[];
+  readiness: "ready_for_design" | "needs_clarification";
+};
+
+export type AnalysisResult = {
+  id: number | null;
+  project_id: number | null;
+  requirement: string;
+  clarifications: Clarification[];
+  analysis: RequirementAnalysis;
+  ai_model: string;
+  created_at: string | null;
+};
+
+export const getAIStatus = () => request<AIStatus>("/api/ai/status");
+
+export const analyzeRequirement = (data: {
+  requirement: string;
+  clarifications: Clarification[];
+  project_id: number | null;
+}) => request<AnalysisResult>("/api/analysis", { method: "POST", body: JSON.stringify(data) });
+
+export const getLatestAnalysis = (projectId: number) =>
+  request<AnalysisResult | null>(`/api/projects/${projectId}/analyses/latest`);

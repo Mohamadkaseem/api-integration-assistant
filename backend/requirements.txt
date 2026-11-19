@@ -4,6 +4,8 @@ fastapi==0.165.0
 uvicorn[standard]==0.54.0
 # Reads settings from environment variables / .env file, with validation
 pydantic-settings==2.16.3
+# Official Claude (Anthropic) SDK - talks to the Claude API
+anthropic==2.10.0
 # Database toolkit: Python classes <-> SQLite tables (built on SQLAlchemy + Pydantic)
 sqlmodel==0.0.50
 # --- Testing tools ---

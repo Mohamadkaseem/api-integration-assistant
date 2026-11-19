@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from app.db import get_session
+from app.models.analysis import AnalysisRecord
 from app.models.project import Project, ProjectCreate, ProjectRead, ProjectUpdate, utc_now
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -61,5 +62,8 @@ def update_project(
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(project_id: int, session: Session = Depends(get_session)) -> None:
     project = _get_or_404(session, project_id)
+    # Delete the project's saved analyses too, so nothing is left orphaned.
+    for record in session.exec(select(AnalysisRecord).where(AnalysisRecord.project_id == project_id)).all():
+        session.delete(record)
     session.delete(project)
     session.commit()

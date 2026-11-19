@@ -33,6 +33,17 @@ npm run dev
 ```
 Open http://localhost:3000 — the "Backend status" card should show a green dot.
 
+## Connect Claude (needed from Milestone 3)
+
+1. Get an API key at https://console.anthropic.com → **API Keys** (add credit under **Billing** first).
+2. Open `backend\.env` in Notepad and set:
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...your key...
+   ```
+3. Save, then restart the backend (`Ctrl + C`, then `uvicorn app.main:app --reload`).
+
+The key stays on your computer: `.env` is never committed to Git, never sent to the browser.
+
 ## Daily use
 
 **Get the latest code** (after Claude pushes a new milestone), in PowerShell:

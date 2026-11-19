@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** Milestone 2 complete and verified on Windows. Working on Milestone 3.
+**Current state:** Milestone 3 built and tested with a mock Claude. Waiting for you to add your API key and test with real Claude.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -23,7 +23,18 @@
 - [x] Fixed test warning (httpx → httpx2)
 - [x] Verified on Windows: create / edit / delete / data survives restart
 
-## M3 — AI + Requirement Analyzer
+## M3 — AI + Requirement Analyzer ✅ (built & tested with mock Claude)
+- [x] Official Anthropic SDK (`anthropic` 2.10), model `claude-opus-5-5`, effort `high` (configurable in `.env`)
+- [x] Provider abstraction (`app/ai/provider.py`) so another AI can be added later
+- [x] API key read from `backend/.env` only (never sent to the browser, hidden in logs)
+- [x] Structured output: Claude must return the exact `RequirementAnalysis` schema
+- [x] Rules: no invented endpoints, assumptions listed separately, prioritized clarification questions
+- [x] Automatic fallback model if Claude declines a request
+- [x] Clear error messages: no key, wrong key, no credit, rate limit, network, declined
+- [x] Analyses saved per project with history; re-analyze with client answers
+- [x] Requirement Analyzer page + "Analyze requirement" button on each project
+- [x] 26 backend tests (fake AI + mock Claude server), browser flow tested
+- [ ] **You:** add API key, analyze Projects A and B with real Claude
 ## M4 — Request Builder & API testing
 ## M5 — Credentials & Auth Assistant
 ## M6 — Error Troubleshooter

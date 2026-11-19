@@ -5,11 +5,13 @@ Run it with:  uvicorn app.main:app --reload
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
-from app.api.routes import health, projects
+from app.ai.provider import AIError
+from app.api.routes import analysis, health, projects
 from app.core.config import get_settings
 from app.db import create_db_and_tables, engine
 from app.seed import seed_starter_projects
@@ -43,6 +45,14 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+
+@app.exception_handler(AIError)
+async def handle_ai_error(_request: Request, exc: AIError) -> JSONResponse:
+    # Turn AI problems into a clear message the frontend can show.
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+
+
 # All our endpoints live under /api so they never clash with anything else.
 app.include_router(health.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
+app.include_router(analysis.router, prefix="/api")

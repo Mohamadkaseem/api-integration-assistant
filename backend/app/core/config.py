@@ -7,6 +7,7 @@ hard-coded in source code.
 
 from functools import lru_cache
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,11 +16,21 @@ class Settings(BaseSettings):
 
     app_name: str = "My API Integration Assistant"
     environment: str = "development"
-    version: str = "0.2.0"
+    version: str = "0.3.0"
     # Stored as a comma-separated string, e.g. "http://localhost:3000,https://app.example.com"
     cors_origins: str = "http://localhost:3000"
     # SQLite = the whole database is one file. "./data/app.db" is relative to the backend folder.
     database_url: str = "sqlite:///./data/app.db"
+
+    # --- AI ---
+    # SecretStr hides the value if settings are ever printed or logged.
+    anthropic_api_key: SecretStr = SecretStr("")
+    ai_model: str = "claude-opus-5-5"
+    ai_effort: str = "high"
+
+    @property
+    def ai_configured(self) -> bool:
+        return bool(self.anthropic_api_key.get_secret_value().strip())
 
     @property
     def cors_origin_list(self) -> list[str]:

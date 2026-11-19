@@ -11,7 +11,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from app.db import get_session
 from app.main import app
-from app.models import project  # noqa: F401  (registers the table)
+from app.models import analysis, project  # noqa: F401  (registers the tables)
 
 
 @pytest.fixture
