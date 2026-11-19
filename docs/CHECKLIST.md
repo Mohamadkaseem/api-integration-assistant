@@ -33,7 +33,7 @@
 - [x] Clear error messages: no key, wrong key, no credit, rate limit, network, declined
 - [x] Analyses saved per project with history; re-analyze with client answers
 - [x] Requirement Analyzer page + "Analyze requirement" button on each project
-- [x] 26 backend tests (fake AI + mock Claude server), browser flow tested
+- [x] 24 backend tests (fake AI + mock Claude server), browser flow tested
 - [ ] **You:** add API key, analyze Projects A and B with real Claude
 ## M4 — Request Builder & API testing
 ## M5 — Credentials & Auth Assistant
