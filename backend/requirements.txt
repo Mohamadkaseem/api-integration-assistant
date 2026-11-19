@@ -6,9 +6,15 @@ uvicorn[standard]==0.54.0
 pydantic-settings==2.16.3
 # Official Claude (Anthropic) SDK - talks to the Claude API
 anthropic==2.10.0
+# Reads OpenAPI / Swagger YAML files
+pyyaml==6.0.3
+# Extracts text from PDF documentation
+pypdf==7.1.1
+# Lets FastAPI receive file uploads
+python-multipart==0.0.34
+# HTTP client: downloads documentation from URLs (and powers FastAPI's TestClient)
+httpx2==2.16.2
 # Database toolkit: Python classes <-> SQLite tables (built on SQLAlchemy + Pydantic)
 sqlmodel==0.0.50
 # --- Testing tools ---
 pytest==9.2.0
-# HTTP client used by FastAPI's TestClient in our tests
-httpx2==2.16.2

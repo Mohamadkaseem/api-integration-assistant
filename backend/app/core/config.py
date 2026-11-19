@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     app_name: str = "My API Integration Assistant"
     environment: str = "development"
-    version: str = "0.3.0"
+    version: str = "0.4.0"
     # Stored as a comma-separated string, e.g. "http://localhost:3000,https://app.example.com"
     cors_origins: str = "http://localhost:3000"
     # SQLite = the whole database is one file. "./data/app.db" is relative to the backend folder.

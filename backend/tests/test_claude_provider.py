@@ -17,17 +17,29 @@ from app.ai.requirement_analyzer import RequirementAnalysis, analyze_requirement
 from tests.sample_analysis import SAMPLE_ANALYSIS
 
 
-def claude_reply(text: str, stop_reason: str = "end_turn") -> dict:
-    return {
-        "id": "msg_test",
-        "type": "message",
-        "role": "assistant",
-        "model": "claude-opus-5-5",
-        "content": [{"type": "text", "text": text}],
-        "stop_reason": stop_reason,
-        "stop_sequence": None,
-        "usage": {"input_tokens": 100, "output_tokens": 200},
-    }
+def claude_reply(text: str | None, stop_reason: str = "end_turn") -> httpx2.Response:
+    """A streamed (Server-Sent Events) reply, exactly the shape the Claude API sends."""
+    events = [
+        ("message_start", {"type": "message_start", "message": {
+            "id": "msg_test", "type": "message", "role": "assistant", "model": "claude-opus-5-5",
+            "content": [], "stop_reason": None, "stop_sequence": None,
+            "usage": {"input_tokens": 100, "output_tokens": 1}}}),
+    ]
+    if text is not None:
+        events += [
+            ("content_block_start", {"type": "content_block_start", "index": 0,
+                                     "content_block": {"type": "text", "text": ""}}),
+            ("content_block_delta", {"type": "content_block_delta", "index": 0,
+                                     "delta": {"type": "text_delta", "text": text}}),
+            ("content_block_stop", {"type": "content_block_stop", "index": 0}),
+        ]
+    events += [
+        ("message_delta", {"type": "message_delta", "delta": {"stop_reason": stop_reason, "stop_sequence": None},
+                           "usage": {"output_tokens": 200}}),
+        ("message_stop", {"type": "message_stop"}),
+    ]
+    body = "".join(f"event: {name}\ndata: {json.dumps(data)}\n\n" for name, data in events)
+    return httpx2.Response(200, headers={"content-type": "text/event-stream"}, content=body.encode())
 
 
 def make_provider(handler) -> ClaudeProvider:
@@ -45,7 +57,7 @@ def test_sends_structured_request_and_parses_answer():
     def handler(request: httpx2.Request) -> httpx2.Response:
         seen["body"] = json.loads(request.content)
         seen["headers"] = request.headers
-        return httpx2.Response(200, json=claude_reply(SAMPLE_ANALYSIS.model_dump_json()))
+        return claude_reply(SAMPLE_ANALYSIS.model_dump_json())
 
     result = analyze_requirement(make_provider(handler), "Sync HubSpot companies into Zoho CRM accounts.")
 
@@ -56,6 +68,7 @@ def test_sends_structured_request_and_parses_answer():
     assert body["output_config"]["effort"] == "high"
     assert body["output_config"]["format"]["type"] == "json_schema"  # structured output requested
     assert body["fallbacks"] == "default"
+    assert body["stream"] is True
     assert "server-side-fallback-2026-07-01" in seen["headers"]["anthropic-beta"]
     assert "Do NOT name or guess API endpoints" in body["system"]
     assert "temperature" not in body
@@ -73,9 +86,7 @@ def test_bad_api_key_gives_friendly_error():
 
 def test_refusal_without_text_is_reported():
     def handler(request):
-        reply = claude_reply("", stop_reason="refusal")
-        reply["content"] = []
-        return httpx2.Response(200, json=reply)
+        return claude_reply(None, stop_reason="refusal")
 
     with pytest.raises(AIError) as err:
         analyze_requirement(make_provider(handler), "Sync HubSpot companies into Zoho CRM accounts.")
@@ -85,7 +96,7 @@ def test_refusal_without_text_is_reported():
 
 def test_refusal_with_partial_text_is_reported_clearly():
     def handler(request):
-        return httpx2.Response(200, json=claude_reply('{"summary": "half', stop_reason="refusal"))
+        return claude_reply('{"summary": "half', stop_reason="refusal")
 
     with pytest.raises(AIError) as err:
         analyze_requirement(make_provider(handler), "Sync HubSpot companies into Zoho CRM accounts.")

@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** Milestone 3 built and tested with a mock Claude. Waiting for you to add your API key and test with real Claude.
+**Current state:** M3 and M4 built and tested here (with a mock Claude). Waiting for you to test both on your computer with your API key.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -35,9 +35,20 @@
 - [x] Requirement Analyzer page + "Analyze requirement" button on each project
 - [x] 24 backend tests (fake AI + mock Claude server), browser flow tested
 - [ ] **You:** add API key, analyze Projects A and B with real Claude
-## M4 — Request Builder & API testing
-## M5 — Credentials & Auth Assistant
-## M6 — Error Troubleshooter
-## M7 — API Doc Analyzer
-## M8 — Field Mapping & Workflow Designer
+## M4 — API Doc Analyzer ✅ (built & tested here)
+- [x] Upload: OpenAPI 3 / Swagger 2 (JSON or YAML) and Postman v2 collections, read by code (no AI) → "Verified · from spec"
+- [x] Upload: PDF (text-based) and pasted text, read by Claude in parts → every endpoint quote-checked
+- [x] Endpoints whose quote/path is not found word-for-word are marked "Unverified" (never silently trusted)
+- [x] Import from URL with SSRF protection (no localhost / private networks / metadata IPs, redirects checked, 30 MB / 20 s limits)
+- [x] Postman header and auth values (possible secrets) are never stored
+- [x] Clear messages for scanned PDFs, JavaScript-only pages, too-long documents, missing API key
+- [x] Documentation page: base URLs, auth schemes, search / method / trust filters, endpoint details, remove endpoint
+- [x] Tested with real public specs (GitHub REST API: 1,281 endpoints in ~4 s)
+- [x] 59 backend tests; browser flow tested
+- [ ] **You:** import real docs for your projects (e.g. Zoho Sign, Zoho CRM, a Zwayam PDF)
+
+## M5 — Request Builder & API testing
+## M6 — Credentials & Auth Assistant
+## M7 — Error Troubleshooter
+## M8 — Endpoint matching, Field Mapping & Workflow Designer
 ## M9 — Handover Document Generator

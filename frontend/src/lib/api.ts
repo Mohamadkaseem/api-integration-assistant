@@ -20,7 +20,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     response = await fetch(`${API_URL}${path}`, {
       cache: "no-store",
       ...options,
-      headers: { "Content-Type": "application/json", ...options.headers },
+      // JSON bodies need this header; file uploads (FormData) must let the browser set its own.
+      headers: typeof options.body === "string" ? { "Content-Type": "application/json", ...options.headers } : options.headers,
     });
   } catch {
     throw new ApiError(0, "Cannot reach the backend. Is it running on port 8000?");
@@ -141,3 +142,62 @@ export const analyzeRequirement = (data: {
 
 export const getLatestAnalysis = (projectId: number) =>
   request<AnalysisResult | null>(`/api/projects/${projectId}/analyses/latest`);
+
+// ---------- API documentation ----------
+
+export type Verification = "spec" | "quoted" | "unverified";
+
+export type ApiParameter = {
+  name: string;
+  location: string;
+  required: boolean;
+  type: string;
+  description: string;
+};
+
+export type ApiEndpoint = {
+  id: number;
+  method: string;
+  path: string;
+  summary: string;
+  description: string;
+  auth: string;
+  parameters: ApiParameter[];
+  request_body: string;
+  responses: { status: string; description: string; example: string }[];
+  verification: Verification;
+  evidence: string;
+};
+
+export type ApiDocSummary = {
+  id: number;
+  project_id: number | null;
+  app_name: string;
+  title: string;
+  source_type: "openapi" | "postman" | "pdf" | "html" | "text";
+  source_ref: string;
+  created_at: string;
+  endpoint_count: number;
+  counts: Record<Verification, number>;
+};
+
+export type ApiDocDetail = ApiDocSummary & {
+  version: string;
+  base_urls: string[];
+  auth_schemes: { name: string; type: string; details: string }[];
+  warnings: string[];
+  endpoints: ApiEndpoint[];
+};
+
+export const listDocs = (projectId?: number) =>
+  request<ApiDocSummary[]>(projectId ? `/api/docs?project_id=${projectId}` : "/api/docs");
+
+export const getDoc = (id: number) => request<ApiDocDetail>(`/api/docs/${id}`);
+
+export const importDoc = (form: FormData) =>
+  request<ApiDocDetail>("/api/docs/import", { method: "POST", body: form });
+
+export const deleteDoc = (id: number) => request<void>(`/api/docs/${id}`, { method: "DELETE" });
+
+export const deleteEndpoint = (docId: number, endpointId: number) =>
+  request<void>(`/api/docs/${docId}/endpoints/${endpointId}`, { method: "DELETE" });

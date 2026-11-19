@@ -1,0 +1,32 @@
+{
+  "openapi": "3.0.3",
+  "info": {"title": "Demo Sign API", "version": "1.2"},
+  "servers": [{"url": "https://sign.example.com/api/v1"}],
+  "components": {
+    "securitySchemes": {
+      "oauth": {"type": "oauth2", "flows": {"authorizationCode": {
+        "authorizationUrl": "https://accounts.example.com/oauth/v2/auth",
+        "tokenUrl": "https://accounts.example.com/oauth/v2/token",
+        "scopes": {"sign.requests.CREATE": "Create requests", "sign.requests.READ": "Read requests"}}}}
+    },
+    "schemas": {
+      "Request": {"type": "object", "properties": {"request_name": {"type": "string"}, "actions": {"type": "array", "items": {"$ref": "#/components/schemas/Action"}}}},
+      "Action": {"type": "object", "properties": {"recipient_email": {"type": "string"}, "signing_order": {"type": "integer"}}}
+    }
+  },
+  "security": [{"oauth": ["sign.requests.READ"]}],
+  "paths": {
+    "/requests": {
+      "post": {
+        "summary": "Create a signing request",
+        "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Request"}}}},
+        "responses": {"200": {"description": "Created", "content": {"application/json": {"example": {"status": "success"}}}}}
+      }
+    },
+    "/requests/{request_id}": {
+      "parameters": [{"name": "request_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "get": {"summary": "Get a request", "responses": {"200": {"description": "OK"}, "404": {"description": "Not found"}}}
+    },
+    "/external": {"get": {"responses": {"200": {"$ref": "other-file.yaml#/Thing"}}}}
+  }
+}

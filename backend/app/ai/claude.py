@@ -28,18 +28,21 @@ class ClaudeProvider:
         # `client` can be injected in tests; normally we build the real one.
         self._client = client or anthropic.Anthropic(api_key=api_key, timeout=300.0, max_retries=2)
 
-    def generate_structured(self, *, system: str, user: str, schema: type[T]) -> T:
+    def generate_structured(self, *, system: str, user: str, schema: type[T], max_tokens: int = 16000) -> T:
         try:
-            response = self._client.beta.messages.parse(
+            # Streaming keeps long answers (e.g. many endpoints from a big document)
+            # from hitting HTTP timeouts. We simply wait for the final message.
+            with self._client.beta.messages.stream(
                 model=self.model,
-                max_tokens=16000,
+                max_tokens=max_tokens,
                 system=system,
                 messages=[{"role": "user", "content": user}],
                 output_format=schema,
                 output_config={"effort": self.effort},
                 betas=[FALLBACK_BETA],
                 fallbacks="default",
-            )
+            ) as stream:
+                response = stream.get_final_message()
         # Most specific errors first. Messages never include the API key.
         except anthropic.AuthenticationError as exc:
             raise AIError(
@@ -73,7 +76,7 @@ class ClaudeProvider:
         if response.stop_reason == "refusal":
             raise AIError("Claude declined to analyze this text. Try rephrasing the requirement.", 422)
         if response.stop_reason == "max_tokens":
-            raise AIError("The analysis was too long and got cut off. Try a shorter requirement.", 422)
+            raise AIError("The AI answer was too long and got cut off. Try a shorter input.", 422)
         if response.parsed_output is None:
             raise AIError("Claude returned an answer that did not match the expected format. Please try again.", 502)
 

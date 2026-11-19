@@ -89,17 +89,18 @@ Each one is added only in the milestone that needs it.
 | # | Milestone | Delivers | Complexity |
 |---|---|---|---|
 | **M1** | Foundations ✅ | Backend + UI shell + health check + tests | Low |
-| M2 | Projects & SQLite | Save/list/edit integration projects; A, B, C pre-loaded | Low |
-| M3 | AI + Requirement Analyzer | Claude connected; structured analysis + clarification questions; tested on A and B | Medium |
-| M4 | Request Builder & API testing | Postman-like screen, safe execution, write confirmation, request history | Medium |
-| M5 | Credentials & Auth Assistant | Encrypted credentials, API key/Bearer/Basic, Zoho OAuth + auto refresh (Project C) | Medium–High |
-| M6 | Error Troubleshooter | Paste or auto-capture errors → explanation + corrected request → re-test | Low–Medium |
-| M7 | API Doc Analyzer | OpenAPI/Postman import (verified endpoints), text/PDF/URL (unverified), endpoint search | Medium–High |
-| M8 | Field Mapping & Workflow Designer | Endpoint selection from catalogue, editable mappings, status mapping, Mermaid diagram | Medium |
+| **M2** | Projects & SQLite ✅ | Save/list/edit integration projects; A, B, C pre-loaded | Low |
+| **M3** | AI + Requirement Analyzer ✅ | Claude connected; structured analysis + clarification questions | Medium |
+| **M4** | API Doc Analyzer ✅ | Upload (OpenAPI/Postman/PDF/text) and URL import; verified / quoted / unverified endpoints | Medium–High |
+| M5 | Request Builder & API testing | Postman-like screen, safe execution, write confirmation, request history; start from an imported endpoint | Medium |
+| M6 | Credentials & Auth Assistant | Encrypted credentials, API key/Bearer/Basic, Zoho OAuth + auto refresh (Project C) | Medium–High |
+| M7 | Error Troubleshooter | Paste or auto-capture errors → explanation + corrected request → re-test | Low–Medium |
+| M8 | Endpoint matching, Field Mapping & Workflow | Pick endpoints for a requirement from imported docs, editable mappings, Mermaid diagram | Medium |
 | M9 | Handover Document Generator | Full developer handover doc, Markdown + .docx export | Low–Medium |
 | Later | Simple execution engine | Run saved workflows: webhooks/polling, retries, logs, approval pauses | High |
 
-**Why testing (M4–M6) comes before doc analysis (M7):** it gives you a daily-use tool (a Postman with an AI troubleshooter) as early as possible, and it doesn't depend on anything else.
+**Order change (2026-11-19):** the API Doc Analyzer moved up to M4 at your request, because real documentation is the
+foundation for everything after it (requests, mappings, workflows).
 
 **Complexity scale:** Low = 1–2 sittings, Medium = 3–5, High = 6+.
 

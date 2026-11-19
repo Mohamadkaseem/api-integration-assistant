@@ -1,0 +1,37 @@
+swagger: "2.0"
+info:
+  title: Legacy CRM
+  version: "1"
+host: crm.example.com
+basePath: /v2
+schemes: [https]
+securityDefinitions:
+  apiKey:
+    type: apiKey
+    in: header
+    name: X-API-Key
+paths:
+  /accounts/search:
+    get:
+      summary: Search accounts
+      parameters:
+        - name: criteria
+          in: query
+          type: string
+          required: true
+      responses:
+        "200":
+          description: OK
+  /accounts:
+    post:
+      summary: Create account
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              Account_Name: {type: string}
+      responses:
+        "201":
+          description: Created

@@ -25,6 +25,8 @@ class AIProvider(Protocol):
     name: str
     model: str
 
-    def generate_structured(self, *, system: str, user: str, schema: type[T]) -> T:
-        """Ask the AI a question and get back a validated `schema` object."""
+    def generate_structured(self, *, system: str, user: str, schema: type[T], max_tokens: int = 16000) -> T:
+        """Ask the AI a question and get back a validated `schema` object.
+
+        `max_tokens` caps how long the answer may be (long documents need more)."""
         ...

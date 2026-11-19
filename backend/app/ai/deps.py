@@ -1,7 +1,11 @@
-"""FastAPI dependency that hands routes the configured AI provider.
+"""FastAPI dependencies that hand routes the configured AI provider.
 
 Tests replace this with a fake provider, so they never call the real API.
 """
+
+from collections.abc import Callable
+
+from fastapi import Request
 
 from app.ai.claude import ClaudeProvider
 from app.ai.provider import AIError, AIProvider
@@ -20,3 +24,12 @@ def get_ai_provider() -> AIProvider:
         model=settings.ai_model,
         effort=settings.ai_effort,
     )
+
+
+def get_ai_provider_factory(request: Request) -> Callable[[], AIProvider]:
+    """For routes that need the AI only sometimes (e.g. a PDF needs it, an OpenAPI file does not).
+
+    Returns a function that creates the provider on demand, so no API key is needed
+    unless the AI is really used. It honours test overrides of `get_ai_provider`.
+    """
+    return request.app.dependency_overrides.get(get_ai_provider, get_ai_provider)

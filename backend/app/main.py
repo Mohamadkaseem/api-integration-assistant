@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from app.ai.provider import AIError
-from app.api.routes import analysis, health, projects
+from app.api.routes import analysis, docs, health, projects
 from app.core.config import get_settings
 from app.db import create_db_and_tables, engine
 from app.seed import seed_starter_projects
@@ -56,3 +56,4 @@ async def handle_ai_error(_request: Request, exc: AIError) -> JSONResponse:
 app.include_router(health.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(analysis.router, prefix="/api")
+app.include_router(docs.router, prefix="/api")
