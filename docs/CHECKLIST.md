@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M7 complete; M8 built and tested here (AI parts of M3/M4/M7/M8 await Claude credit).
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M8 complete (AI parts of M3/M4/M7/M8 await Claude credit). Next: M9 Handover document.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -88,7 +88,7 @@
 - [x] 101 backend tests (incl. secrets never reaching the AI); browser flow tested end to end
 - [x] Verified on Windows: pasted Zoho error explained (after fixing the empty-status-code bug)
 - [ ] **Later (needs credit):** "Explain with AI" with a real error
-## M8 — Integration Design: endpoints, field mapping, workflow ✅ (built & tested here)
+## M8 — Integration Design: endpoints, field mapping, workflow ✅
 - [x] One design per project: trigger, documentation to use, steps, field mappings
 - [x] Steps from the latest requirement analysis, or added/edited/reordered manually (free)
 - [x] Choose each step's endpoint from imported docs; backend refuses endpoints outside the selected docs
@@ -99,6 +99,6 @@
 - [x] "Suggest mappings with AI": every field checked against the docs → documented / assumed; your rows kept
 - [x] Workflow diagram (Mermaid) generated from the steps: decisions, waits, missing endpoints highlighted; Mermaid source to copy
 - [x] 112 backend tests; browser flow tested with a fake Claude
-- [ ] **You:** open a project → Integration design, add steps manually, pick endpoints, view the diagram
+- [x] Verified on Windows: Project A steps added manually, workflow diagram with "waits for" labels
 - [ ] **Later (needs credit):** AI matching and mapping with real docs
 ## M9 — Handover Document Generator
