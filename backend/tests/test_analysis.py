@@ -34,9 +34,16 @@ def make_project(client):
     return client.post("/api/projects", json={"name": "B", "requirement": REQUIREMENT}).json()["id"]
 
 
-def test_ai_status_never_returns_the_key(client):
+def test_ai_status_never_returns_the_key(client, monkeypatch):
+    from pydantic import SecretStr
+
+    from app.core.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "anthropic_api_key", SecretStr("sk-ant-REAL-SECRET-123"))
     body = client.get("/api/ai/status").json()
-    assert set(body) == {"configured", "provider", "model"}
+    assert set(body) == {"configured", "provider", "model", "env_file_found", "hint"}
+    assert body["configured"] is True
+    assert "REAL-SECRET" not in str(body)
 
 
 def test_analyze_without_project_is_not_saved(client, fake_ai):

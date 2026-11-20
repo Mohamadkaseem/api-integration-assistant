@@ -85,10 +85,7 @@ export function RequirementAnalyzer() {
       {aiStatus && !aiStatus.configured && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p className="font-semibold">Claude is not connected yet</p>
-          <p className="mt-1">
-            Add your API key to <code className="rounded bg-amber-100 px-1">backend\.env</code> as{" "}
-            <code className="rounded bg-amber-100 px-1">ANTHROPIC_API_KEY=sk-ant-…</code>, then restart the backend.
-          </p>
+          <p className="mt-1">{aiStatus.hint}</p>
         </div>
       )}
 

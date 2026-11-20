@@ -91,7 +91,7 @@ export const deleteProject = (id: number) =>
 
 // ---------- AI / Requirement analysis ----------
 
-export type AIStatus = { configured: boolean; provider: string; model: string };
+export type AIStatus = { configured: boolean; provider: string; model: string; env_file_found: boolean; hint: string };
 
 export type Clarification = { question: string; answer: string };
 

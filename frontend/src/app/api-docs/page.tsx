@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { DocImporter } from "@/components/DocImporter";
-import { listDocs, listProjects, type ApiDocSummary, type Project } from "@/lib/api";
+import { getAIStatus, listDocs, listProjects, type AIStatus, type ApiDocSummary, type Project } from "@/lib/api";
 import { SOURCE_LABEL, VERIFICATION } from "@/lib/docs";
 
 export default function ApiDocsPage() {
@@ -13,12 +13,14 @@ export default function ApiDocsPage() {
   const [docs, setDocs] = useState<ApiDocSummary[] | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [aiStatus, setAIStatus] = useState<AIStatus | null>(null);
 
   useEffect(() => {
     listDocs()
       .then(setDocs)
       .catch((err: Error) => setError(err.message));
     listProjects().then(setProjects).catch(() => setProjects([]));
+    getAIStatus().then(setAIStatus).catch(() => setAIStatus(null));
   }, []);
 
   const projectName = (id: number | null) => projects.find((p) => p.id === id)?.name;
@@ -32,7 +34,7 @@ export default function ApiDocsPage() {
         </p>
       </div>
 
-      <DocImporter projects={projects} onImported={(doc) => router.push(`/api-docs/${doc.id}`)} />
+      <DocImporter projects={projects} aiStatus={aiStatus} onImported={(doc) => router.push(`/api-docs/${doc.id}`)} />
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-slate-900">Imported documentation</h2>

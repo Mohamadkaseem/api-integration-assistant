@@ -7,6 +7,7 @@
 
 import json
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -27,6 +28,9 @@ class AIStatus(BaseModel):
     configured: bool
     provider: str
     model: str
+    # Diagnostics for a missing key - never the key itself.
+    env_file_found: bool
+    hint: str
 
 
 class AnalyzeRequest(BaseModel):
@@ -60,8 +64,28 @@ def _to_response(record: AnalysisRecord) -> AnalysisResponse:
 @router.get("/ai/status", response_model=AIStatus)
 def ai_status() -> AIStatus:
     settings = get_settings()
-    # Never return the key itself - only whether one exists.
-    return AIStatus(configured=settings.ai_configured, provider="claude", model=settings.ai_model)
+    # Never return the key itself - only whether one exists, and what is likely wrong.
+    env_file = Path(".env")
+    if settings.ai_configured:
+        hint = ""
+    elif not env_file.exists():
+        if Path(".env.txt").exists():
+            hint = "Found 'backend\\.env.txt' - Notepad added '.txt'. Rename the file to exactly '.env' and restart the backend."
+        else:
+            hint = "No 'backend\\.env' file found. Create it from .env.example and add ANTHROPIC_API_KEY."
+    else:
+        text = env_file.read_text(encoding="utf-8", errors="replace")
+        if "ANTHROPIC_API_KEY" not in text:
+            hint = "'backend\\.env' has no ANTHROPIC_API_KEY line. Add: ANTHROPIC_API_KEY=sk-ant-... then restart the backend."
+        else:
+            hint = (
+                "ANTHROPIC_API_KEY is in 'backend\\.env' but empty or not loaded yet. Check the key is right after the '=' "
+                "on the same line, save the file, then restart the backend (Ctrl + C, then uvicorn again)."
+            )
+    return AIStatus(
+        configured=settings.ai_configured, provider="claude", model=settings.ai_model,
+        env_file_found=env_file.exists(), hint=hint,
+    )
 
 
 @router.post("/analysis", response_model=AnalysisResponse)

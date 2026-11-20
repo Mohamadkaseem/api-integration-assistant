@@ -3,6 +3,7 @@
 Run it with:  uvicorn app.main:app --reload
 """
 
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -25,6 +26,10 @@ async def lifespan(_app: FastAPI):
     create_db_and_tables()
     with Session(engine) as session:
         seed_starter_projects(session)
+    # One clear line in the terminal so you can see whether Claude is connected (never prints the key).
+    logging.getLogger("uvicorn.error").info(
+        "Claude API key: %s (model %s)", "found" if settings.ai_configured else "NOT FOUND - add ANTHROPIC_API_KEY to backend/.env", settings.ai_model
+    )
     yield
 
 
