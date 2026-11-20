@@ -401,3 +401,58 @@ export const explainErrorWithAI = (data: TroubleshootInput) =>
     method: "POST",
     body: JSON.stringify(data),
   });
+
+// ---------- Integration design ----------
+
+export type DesignStep = {
+  order: number;
+  app: string;
+  action: string;
+  description: string;
+  condition: string;
+  waits_for: string;
+  endpoint_id: number | null;
+  endpoint_label: string;
+  match_status: "unmatched" | "matched" | "manual" | "no_endpoint";
+  match_note: string;
+};
+
+export type FieldMapping = {
+  source_app: string;
+  source_field: string;
+  target_app: string;
+  target_field: string;
+  transform: string;
+  required: boolean;
+  issue: "none" | "type" | "date" | "picklist" | "nested" | "required" | "unknown";
+  notes: string;
+  evidence: "documented" | "assumed" | "manual";
+};
+
+export type Design = {
+  project_id: number;
+  saved: boolean;
+  analysis_id: number | null;
+  has_analysis: boolean;
+  trigger: string;
+  doc_ids: number[];
+  steps: DesignStep[];
+  mappings: FieldMapping[];
+  missing_documentation: string[];
+  mermaid: string;
+  available_docs: { id: number; app_name: string; title: string; endpoint_count: number; linked_to_project: boolean }[];
+  endpoints: { id: number; doc_id: number; app_name: string; method: string; path: string; summary: string; verification: string }[];
+  updated_at: string | null;
+};
+
+export type DesignInput = { trigger: string; doc_ids: number[]; steps: DesignStep[]; mappings: FieldMapping[] };
+
+export const getDesign = (projectId: number) => request<Design>(`/api/projects/${projectId}/design`);
+export const saveDesign = (projectId: number, data: DesignInput) =>
+  request<Design>(`/api/projects/${projectId}/design`, { method: "PUT", body: JSON.stringify(data) });
+export const designFromAnalysis = (projectId: number) =>
+  request<Design>(`/api/projects/${projectId}/design/from-analysis`, { method: "POST" });
+export const matchEndpointsAI = (projectId: number) =>
+  request<Design>(`/api/projects/${projectId}/design/match-endpoints`, { method: "POST" });
+export const suggestMappingsAI = (projectId: number) =>
+  request<Design>(`/api/projects/${projectId}/design/suggest-mappings`, { method: "POST" });

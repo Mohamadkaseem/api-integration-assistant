@@ -26,7 +26,7 @@ engine = create_engine(settings.database_url, connect_args={"check_same_thread":
 
 def create_db_and_tables() -> None:
     # Importing the models registers their tables with SQLModel before creating them.
-    from app.models import analysis, api_doc, credential, project, request_log  # noqa: F401
+    from app.models import analysis, api_doc, credential, design, project, request_log  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
 

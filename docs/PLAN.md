@@ -95,7 +95,7 @@ Each one is added only in the milestone that needs it.
 | **M5** | Request Builder & API testing ✅ | Postman-like screen, safe execution, write confirmation, request history; start from an imported endpoint | Medium |
 | **M6** | Credentials & OAuth ✅ | Encrypted credentials, API key/Bearer/Basic, Zoho OAuth + auto refresh (Project C) | Medium–High |
 | **M7** | Error Troubleshooter ✅ | Paste or auto-capture errors → explanation + corrected request → re-test | Low–Medium |
-| M8 | Endpoint matching, Field Mapping & Workflow | Pick endpoints for a requirement from imported docs, editable mappings, Mermaid diagram | Medium |
+| **M8** | Endpoint matching, Field Mapping & Workflow ✅ | Pick endpoints for a requirement from imported docs, editable mappings, Mermaid diagram | Medium |
 | M9 | Handover Document Generator | Full developer handover doc, Markdown + .docx export | Low–Medium |
 | Later | Simple execution engine | Run saved workflows: webhooks/polling, retries, logs, approval pauses | High |
 
