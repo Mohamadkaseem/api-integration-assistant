@@ -14,6 +14,8 @@ pypdf==7.1.1
 python-multipart==0.0.34
 # HTTP client: downloads documentation from URLs (and powers FastAPI's TestClient)
 httpx2==2.16.2
+# Encrypts saved credentials (API keys, tokens, passwords) on disk
+cryptography==50.0.2
 # Database toolkit: Python classes <-> SQLite tables (built on SQLAlchemy + Pydantic)
 sqlmodel==0.0.50
 # --- Testing tools ---

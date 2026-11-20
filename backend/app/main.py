@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from app.ai.provider import AIError
-from app.api.routes import analysis, docs, health, projects, requests
+from app.api.routes import analysis, credentials, docs, health, projects, requests
 from app.core.config import get_settings
 from app.db import create_db_and_tables, engine
 from app.seed import seed_starter_projects
@@ -63,3 +63,4 @@ app.include_router(projects.router, prefix="/api")
 app.include_router(analysis.router, prefix="/api")
 app.include_router(docs.router, prefix="/api")
 app.include_router(requests.router, prefix="/api")
+app.include_router(credentials.router, prefix="/api")

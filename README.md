@@ -44,6 +44,12 @@ Open http://localhost:3000 — the "Backend status" card should show a green dot
 
 The key stays on your computer: `.env` is never committed to Git, never sent to the browser.
 
+## Saved credentials
+
+Credentials you save are encrypted with a key in `backend\data\credentials.key`, created automatically on first start.
+**Back up that file** (together with `backend\data\app.db`): without it, saved credentials cannot be decrypted and must be entered again.
+Neither file is ever committed to Git.
+
 ## Daily use
 
 **Get the latest code** (after Claude pushes a new milestone), in PowerShell:

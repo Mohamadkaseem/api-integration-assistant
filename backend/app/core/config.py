@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     app_name: str = "My API Integration Assistant"
     environment: str = "development"
-    version: str = "0.5.0"
+    version: str = "0.6.0"
     # Stored as a comma-separated string, e.g. "http://localhost:3000,https://app.example.com"
     cors_origins: str = "http://localhost:3000"
     # SQLite = the whole database is one file. "./data/app.db" is relative to the backend folder.
@@ -24,6 +24,13 @@ class Settings(BaseSettings):
 
     # Request Builder: allow calls to localhost / private network addresses (e.g. a local test server).
     allow_private_network_requests: bool = False
+
+    # Key that encrypts saved credentials. Leave empty to auto-create data/credentials.key on first start.
+    credentials_key: SecretStr = SecretStr("")
+    credentials_key_file: str = "./data/credentials.key"
+    # Where the browser comes back after "Sign in with ..." (register this URL in the app's OAuth settings)
+    oauth_redirect_uri: str = "http://localhost:8000/api/oauth/callback"
+    frontend_url: str = "http://localhost:3000"
 
     # --- AI ---
     # SecretStr hides the value if settings are ever printed or logged.

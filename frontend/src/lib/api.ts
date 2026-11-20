@@ -258,7 +258,7 @@ export type HistoryItem = {
 };
 
 export type HistoryDetail = HistoryItem & {
-  request: Partial<OutgoingRequest> & { auth: Partial<AuthConfig> };
+  request: Partial<OutgoingRequest> & { auth: Partial<AuthConfig>; credential_id?: number | null };
   response_headers: Record<string, string>;
   response_body: string;
   size_bytes: number;
@@ -270,6 +270,7 @@ export const sendRequest = (data: {
   confirm_write: boolean;
   project_id: number | null;
   endpoint_id: number | null;
+  credential_id: number | null;
 }) => request<RunResult>("/api/requests/send", { method: "POST", body: JSON.stringify(data) });
 
 export const listHistory = () => request<HistoryItem[]>("/api/requests/history");
@@ -277,3 +278,61 @@ export const getHistory = (id: number) => request<HistoryDetail>(`/api/requests/
 export const deleteHistory = (id: number) => request<void>(`/api/requests/history/${id}`, { method: "DELETE" });
 export const getRequestStats = () =>
   request<{ total: number; successful: number; failed: number }>("/api/requests/stats");
+
+// ---------- Credentials ----------
+
+export type CredentialType = "api_key" | "bearer" | "basic" | "oauth2";
+
+export type Credential = {
+  id: number;
+  name: string;
+  app_name: string;
+  type: CredentialType;
+  environment: "sandbox" | "production";
+  notes: string;
+  status: "ready" | "needs_authorization" | "error";
+  last_error: string;
+  settings: Record<string, string>;
+  secret_hint: string;
+  has_refresh_token: boolean;
+  expires_at: number | null;
+  redirect_uri: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CredentialInput = {
+  name: string;
+  app_name: string;
+  type: CredentialType;
+  environment: "sandbox" | "production";
+  notes: string;
+  key_name: string;
+  key_in: "header" | "query";
+  key_value: string;
+  token: string;
+  token_prefix: string;
+  username: string;
+  password: string;
+  provider: "zoho" | "generic";
+  data_center: "com" | "eu" | "in" | "com.au" | "jp" | "ca";
+  client_id: string;
+  client_secret: string;
+  scopes: string;
+  auth_url: string;
+  token_url: string;
+  client_auth_method: "post" | "basic";
+};
+
+export const listCredentials = () => request<Credential[]>("/api/credentials");
+export const createCredential = (data: CredentialInput) =>
+  request<Credential>("/api/credentials", { method: "POST", body: JSON.stringify(data) });
+export const updateCredential = (id: number, data: Partial<CredentialInput>) =>
+  request<Credential>(`/api/credentials/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+export const deleteCredential = (id: number) => request<void>(`/api/credentials/${id}`, { method: "DELETE" });
+export const exchangeOAuthCode = (id: number, code: string) =>
+  request<Credential>(`/api/credentials/${id}/oauth/exchange-code`, { method: "POST", body: JSON.stringify({ code }) });
+export const getAuthorizeUrl = (id: number) =>
+  request<{ url: string; redirect_uri: string }>(`/api/credentials/${id}/oauth/authorize-url`);
+export const refreshOAuth = (id: number) =>
+  request<Credential>(`/api/credentials/${id}/oauth/refresh`, { method: "POST" });

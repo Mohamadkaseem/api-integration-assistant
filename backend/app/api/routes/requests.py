@@ -19,22 +19,17 @@ from app.core.config import get_settings
 from app.db import get_session
 from app.http_runner.redact import is_secret_name, redact_body, redact_headers, redact_pairs, redact_url
 from app.http_runner.runner import WRITE_METHODS, OutgoingRequest, RunResult, build_url, send_request
+from app.credentials import oauth
+from app.credentials import service as cred_service
+from app.models.credential import Credential
 from app.models.project import Project
+from app.security.crypto import CredentialDecryptError
 from app.models.request_log import RequestLog
-from app.security.url_fetch import _resolve
+from app.http_runner.deps import get_resolver, get_transport
 
 router = APIRouter(prefix="/requests", tags=["request builder"])
 
 HISTORY_BODY_LIMIT = 100_000
-
-
-def get_transport() -> httpx2.BaseTransport | None:
-    """The real network (None). Tests replace this with a mock server."""
-    return None
-
-
-def get_resolver():
-    return _resolve
 
 
 class SendRequest(BaseModel):
@@ -42,6 +37,7 @@ class SendRequest(BaseModel):
     confirm_write: bool = False
     project_id: int | None = None
     endpoint_id: int | None = None
+    credential_id: int | None = None  # use a saved credential instead of typing auth details
 
 
 class SendResponse(RunResult):
@@ -84,10 +80,11 @@ def _known_secrets(req: OutgoingRequest) -> list[str]:
     return [v for v in values if v]
 
 
-def _redacted_request(req: OutgoingRequest) -> dict:
+def _redacted_request(req: OutgoingRequest, extra_secrets: list[str] | None = None, credential_id: int | None = None) -> dict:
     """What we save: everything needed to resend, minus secrets."""
-    secrets = _known_secrets(req)
+    secrets = _known_secrets(req) + (extra_secrets or [])
     return {
+        "credential_id": credential_id,
         "method": req.method,
         "url": redact_url(req.url),
         "params": redact_pairs([p.model_dump() for p in req.params]),
@@ -122,24 +119,42 @@ def send(
     if data.project_id is not None and session.get(Project, data.project_id) is None:
         raise HTTPException(status_code=404, detail=f"Project {data.project_id} not found")
 
-    result = send_request(
-        req,
-        allow_private=get_settings().allow_private_network_requests,
-        resolve=resolve,
-        transport=transport,
-    )
+    credential, extra_secrets = None, []
+    if data.credential_id is not None:
+        credential = session.get(Credential, data.credential_id)
+        if credential is None:
+            raise HTTPException(status_code=404, detail=f"Credential {data.credential_id} not found")
+        try:
+            auth, extra_secrets = cred_service.auth_for(session, credential, transport, resolve)
+        except (oauth.OAuthError, CredentialDecryptError) as exc:
+            raise HTTPException(status_code=400, detail=f"Credential '{credential.name}': {getattr(exc, 'message', str(exc))}") from exc
+        req = req.model_copy(update={"auth": auth})
+
+    allow_private = get_settings().allow_private_network_requests
+    result = send_request(req, allow_private=allow_private, resolve=resolve, transport=transport)
+
+    # An OAuth access token can be revoked or expire early: refresh once and retry.
+    # (A 401 means the server did not process the request, so retrying is safe.)
+    if result.status_code == 401 and credential is not None and credential.type == "oauth2":
+        try:
+            cred_service.refresh_now(session, credential, transport, resolve)
+            auth, extra_secrets = cred_service.auth_for(session, credential, transport, resolve)
+            req = req.model_copy(update={"auth": auth})
+            result = send_request(req, allow_private=allow_private, resolve=resolve, transport=transport)
+        except oauth.OAuthError:
+            pass  # keep the original 401 answer; the credential now shows the error
 
     log = RequestLog(
         project_id=data.project_id,
         endpoint_id=data.endpoint_id,
         method=req.method,
         url=redact_url(build_url(req)),
-        request_json=json.dumps(_redacted_request(req)),
+        request_json=json.dumps(_redacted_request(req, extra_secrets, data.credential_id)),
         status_code=result.status_code,
         elapsed_ms=result.elapsed_ms,
         size_bytes=result.size_bytes,
         response_headers_json=json.dumps(redact_headers(result.headers)),
-        response_body=redact_body(result.body[:HISTORY_BODY_LIMIT], _known_secrets(req)),
+        response_body=redact_body(result.body[:HISTORY_BODY_LIMIT], _known_secrets(req) + extra_secrets),
         error_kind=result.error_kind,
         error_message=result.error_message,
     )

@@ -9,12 +9,14 @@ import {
   deleteHistory,
   getDoc,
   getHistory,
+  listCredentials,
   listDocs,
   listHistory,
   listProjects,
   sendRequest,
   type ApiDocDetail,
   type ApiDocSummary,
+  type Credential,
   type HistoryDetail,
   type HistoryItem,
   type OutgoingRequest,
@@ -43,6 +45,8 @@ export function RequestBuilder() {
   const [pickerDoc, setPickerDoc] = useState<ApiDocDetail | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [copied, setCopied] = useState(false);
+  const [credentials, setCredentials] = useState<Credential[]>([]);
+  const [credentialId, setCredentialId] = useState("");
 
   const refreshHistory = useCallback(() => {
     listHistory().then(setHistory).catch(() => setHistory([]));
@@ -66,7 +70,7 @@ export function RequestBuilder() {
   function applyHistoryItem(item: HistoryDetail) {
     {
       const saved = item.request;
-      const hadSecrets = JSON.stringify(saved).includes(MASK) || (saved.auth?.type ?? "none") !== "none";
+      const hadSecrets = JSON.stringify(saved).includes(MASK) || ((saved.auth?.type ?? "none") !== "none" && !saved.credential_id);
       setReq({
         ...EMPTY_REQUEST,
         ...saved,
@@ -78,6 +82,7 @@ export function RequestBuilder() {
       } as OutgoingRequest);
       setEndpointId(item.endpoint_id);
       setProjectId(item.project_id ? String(item.project_id) : "");
+      setCredentialId(saved.credential_id ? String(saved.credential_id) : "");
       setResult(null);
       setNotice(hadSecrets ? "Reopened from history. Secret values (tokens, passwords, keys) are never saved — enter them again before sending." : "Reopened from history.");
     }
@@ -92,6 +97,7 @@ export function RequestBuilder() {
   useEffect(() => {
     listProjects().then(setProjects).catch(() => setProjects([]));
     listDocs().then(setDocs).catch(() => setDocs([]));
+    listCredentials().then(setCredentials).catch(() => setCredentials([]));
     refreshHistory();
     // Opened from an imported endpoint (?doc=1&endpoint=5) or from history (?history=3)
     const docParam = searchParams.get("doc");
@@ -127,8 +133,10 @@ export function RequestBuilder() {
       } catch {
         /* keep raw */
       }
+      const cred = credentials.find((x) => String(x.id) === credentialId);
+      const production = cred?.environment === "production" ? `\n\n⚠ Using PRODUCTION credential "${cred.name}".` : "";
       const ok = window.confirm(
-        `Send ${req.method} to ${host}?\n\n${req.method} requests can CREATE, CHANGE or DELETE real data.\nUse a sandbox / test account when possible.`,
+        `Send ${req.method} to ${host}?\n\n${req.method} requests can CREATE, CHANGE or DELETE real data.\nUse a sandbox / test account when possible.${production}`,
       );
       if (!ok) return;
     }
@@ -139,6 +147,7 @@ export function RequestBuilder() {
         confirm_write: isWrite,
         project_id: projectId ? Number(projectId) : null,
         endpoint_id: endpointId,
+        credential_id: credentialId ? Number(credentialId) : null,
       });
       setResult(response);
       refreshHistory();
@@ -239,7 +248,7 @@ export function RequestBuilder() {
                 ["params", `Params (${count(req.params)})`],
                 ["headers", `Headers (${count(req.headers)})`],
                 ["body", `Body${req.body_type !== "none" ? ` (${req.body_type})` : ""}`],
-                ["auth", `Auth${req.auth.type !== "none" ? ` (${req.auth.type})` : ""}`],
+                ["auth", `Auth${credentialId ? " (saved)" : req.auth.type !== "none" ? ` (${req.auth.type})` : ""}`],
               ] as [Tab, string][]
             ).map(([value, label]) => (
               <button key={value} onClick={() => setTab(value)} className={`-mb-px border-b-2 px-3 py-2 ${tab === value ? "border-indigo-600 font-medium text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
@@ -269,6 +278,27 @@ export function RequestBuilder() {
             )}
             {tab === "auth" && (
               <div className="space-y-3 text-sm">
+                <label className="block text-xs font-medium text-slate-600">
+                  Saved credential (recommended)
+                  <select className={`${input} mt-1`} value={credentialId} onChange={(e) => setCredentialId(e.target.value)}>
+                    <option value="">None — type auth details below</option>
+                    {credentials.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.environment}){c.status !== "ready" ? " — not ready" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {credentialId && (() => {
+                  const c = credentials.find((x) => String(x.id) === credentialId);
+                  return (
+                    <p className={`rounded-md px-3 py-2 text-xs ${c?.environment === "production" ? "bg-rose-50 text-rose-800" : "bg-slate-50 text-slate-600"}`}>
+                      Using “{c?.name}”{c?.type === "oauth2" ? " — the access token is renewed automatically when needed." : "."}
+                      {c?.environment === "production" ? " ⚠ PRODUCTION credential: requests affect real data." : ""}
+                    </p>
+                  );
+                })()}
+                {!credentialId && <>
                 <select className={input} value={req.auth.type} onChange={(e) => setAuth({ type: e.target.value as OutgoingRequest["auth"]["type"] })}>
                   <option value="none">No auth</option>
                   <option value="bearer">Bearer / OAuth access token</option>
@@ -305,9 +335,9 @@ export function RequestBuilder() {
                   </div>
                 )}
                 <p className="text-xs text-slate-500">
-                  Secrets are used only to send this request and are never saved (history shows ••••••). Saved, encrypted credentials and
-                  OAuth token refresh come in Milestone 6.
+                  Typed secrets are used only for this request and never saved (history shows ••••••). To reuse a secret, save it under Credentials.
                 </p>
+                </>}
               </div>
             )}
           </div>
@@ -334,6 +364,7 @@ export function RequestBuilder() {
               setResult(null);
               setNotice(null);
               setEndpointId(null);
+              setCredentialId("");
             }}
             className="text-slate-500 hover:text-slate-800"
           >

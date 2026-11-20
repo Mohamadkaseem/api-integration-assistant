@@ -11,7 +11,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from app.db import get_session
 from app.main import app
-from app.models import analysis, api_doc, project, request_log  # noqa: F401  (registers the tables)
+from app.models import analysis, api_doc, credential, project, request_log  # noqa: F401  (registers the tables)
 
 
 @pytest.fixture
@@ -29,3 +29,18 @@ def client(session):
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(autouse=True)
+def temporary_encryption_key(monkeypatch):
+    """Each test encrypts with a throw-away key, so no key file is ever written by tests."""
+    from cryptography.fernet import Fernet
+    from pydantic import SecretStr
+
+    from app.core.config import get_settings
+    from app.security.crypto import get_fernet
+
+    monkeypatch.setattr(get_settings(), "credentials_key", SecretStr(Fernet.generate_key().decode()))
+    get_fernet.cache_clear()
+    yield
+    get_fernet.cache_clear()

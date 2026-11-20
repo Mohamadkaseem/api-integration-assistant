@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M5 verified on Windows. Next: M6 Credentials & OAuth.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M6 built and tested here; waiting for you to test on Windows.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -64,7 +64,18 @@
 - [x] 74 backend tests; browser flow tested incl. a real internet request
 - [x] Verified on Windows: real GET to api.github.com → 200 OK
 - [ ] Optional: real Zoho call with an access token
-## M6 — Credentials & Auth Assistant
+## M6 — Credentials & OAuth ✅ (built & tested here)
+- [x] Saved credentials: API key, Bearer token, Basic auth, OAuth 2.0 — secrets encrypted (Fernet) in SQLite
+- [x] Encryption key auto-created in backend/data/credentials.key (git-ignored; back it up) or CREDENTIALS_KEY in .env
+- [x] Secrets never returned to the browser (only a hint like "…a1b2"); edits keep secrets when fields are left blank
+- [x] Zoho OAuth for all data centres (com, in, eu, com.au, jp, ca); Self Client code exchange
+- [x] Browser sign-in (authorization code flow) with one-time state; Zoho "accounts-server" data-centre switch
+- [x] Generic OAuth 2.0 providers (HubSpot, Google, ...): token URL, client secret in body or Basic header
+- [x] Access token renewed automatically before expiry, and once more after a 401
+- [x] Plain-language OAuth errors (invalid_code, invalid_client, redirect mismatch, invalid_grant, ...), incl. Zoho's errors sent with HTTP 200
+- [x] Request Builder: "Saved credential" in the Auth tab; production credentials flagged in the write confirmation
+- [x] 85 backend tests; browser flow tested (connect, test connection, use in requests, nothing secret in history or DB)
+- [ ] **You:** connect a real Zoho account (Self Client) and send a request with it — Project C
 ## M7 — Error Troubleshooter
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer
 ## M9 — Handover Document Generator
