@@ -13,6 +13,7 @@ from sqlmodel import Session, select
 from app.db import get_session
 from app.models.analysis import AnalysisRecord
 from app.models.api_doc import ApiDocument
+from app.models.request_log import RequestLog
 from app.models.project import Project, ProjectCreate, ProjectRead, ProjectUpdate, utc_now
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -66,9 +67,12 @@ def delete_project(project_id: int, session: Session = Depends(get_session)) -> 
     # Delete the project's saved analyses too, so nothing is left orphaned.
     for record in session.exec(select(AnalysisRecord).where(AnalysisRecord.project_id == project_id)).all():
         session.delete(record)
-    # Keep imported API documents (they may be reused) but unlink them from the project.
+    # Keep imported API documents and request history, but unlink them from the project.
     for doc in session.exec(select(ApiDocument).where(ApiDocument.project_id == project_id)).all():
         doc.project_id = None
         session.add(doc)
+    for log in session.exec(select(RequestLog).where(RequestLog.project_id == project_id)).all():
+        log.project_id = None
+        session.add(log)
     session.delete(project)
     session.commit()

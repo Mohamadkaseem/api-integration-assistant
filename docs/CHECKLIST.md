@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M3 and M4 built and tested here (with a mock Claude). Waiting for you to test both on your computer with your API key.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M5 built and tested here; waiting for you to test on Windows.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -34,7 +34,8 @@
 - [x] Analyses saved per project with history; re-analyze with client answers
 - [x] Requirement Analyzer page + "Analyze requirement" button on each project
 - [x] 24 backend tests (fake AI + mock Claude server), browser flow tested
-- [ ] **You:** add API key, analyze Projects A and B with real Claude
+- [x] API key loaded and accepted by Anthropic on Windows
+- [ ] **Later (needs credit):** analyze Projects A and B with real Claude
 ## M4 — API Doc Analyzer ✅ (built & tested here)
 - [x] Upload: OpenAPI 3 / Swagger 2 (JSON or YAML) and Postman v2 collections, read by code (no AI) → "Verified · from spec"
 - [x] Upload: PDF (text-based) and pasted text, read by Claude in parts → every endpoint quote-checked
@@ -45,9 +46,23 @@
 - [x] Documentation page: base URLs, auth schemes, search / method / trust filters, endpoint details, remove endpoint
 - [x] Tested with real public specs (GitHub REST API: 1,281 endpoints in ~4 s)
 - [x] 59 backend tests; browser flow tested
-- [ ] **You:** import real docs for your projects (e.g. Zoho Sign, Zoho CRM, a Zwayam PDF)
+- [x] Verified on Windows: 59 tests pass, upload form fixes
+- [ ] **Later (needs credit):** PDF / pasted-text import with real Claude
 
-## M5 — Request Builder & API testing
+## M5 — Request Builder & API testing ✅ (built & tested here)
+- [x] GET / POST / PUT / PATCH / DELETE / HEAD / OPTIONS with query params, headers, JSON / text / form body
+- [x] Auth: Bearer (custom prefix, e.g. Zoho-oauthtoken), Basic, API key in header or query
+- [x] Start from an imported endpoint (URL, params, example body built from the schema; Postman {{variables}} filled)
+- [x] "Try in Request Builder" button on every endpoint in the API Doc Analyzer
+- [x] Write methods require confirmation (in the UI and enforced by the backend)
+- [x] Private / local addresses blocked (opt-in: ALLOW_PRIVATE_NETWORK_REQUESTS=true); redirects shown, not followed
+- [x] 30 s timeout, 5 MB response limit, binary responses not dumped, invalid JSON caught before sending
+- [x] Warning for unfilled placeholders like {id} or {{base_url}}
+- [x] History: reopen / resend / delete; secrets never stored (headers, query, auth, and tokens inside saved bodies masked)
+- [x] Copy as cURL with secrets replaced by placeholders
+- [x] Dashboard shows real counts (sent / successful / failed)
+- [x] 74 backend tests; browser flow tested incl. a real internet request
+- [ ] **You:** send a real GET to an API you use (e.g. Zoho with an access token from the Zoho API console)
 ## M6 — Credentials & Auth Assistant
 ## M7 — Error Troubleshooter
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer

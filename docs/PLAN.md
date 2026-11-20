@@ -92,7 +92,7 @@ Each one is added only in the milestone that needs it.
 | **M2** | Projects & SQLite ✅ | Save/list/edit integration projects; A, B, C pre-loaded | Low |
 | **M3** | AI + Requirement Analyzer ✅ | Claude connected; structured analysis + clarification questions | Medium |
 | **M4** | API Doc Analyzer ✅ | Upload (OpenAPI/Postman/PDF/text) and URL import; verified / quoted / unverified endpoints | Medium–High |
-| M5 | Request Builder & API testing | Postman-like screen, safe execution, write confirmation, request history; start from an imported endpoint | Medium |
+| **M5** | Request Builder & API testing ✅ | Postman-like screen, safe execution, write confirmation, request history; start from an imported endpoint | Medium |
 | M6 | Credentials & Auth Assistant | Encrypted credentials, API key/Bearer/Basic, Zoho OAuth + auto refresh (Project C) | Medium–High |
 | M7 | Error Troubleshooter | Paste or auto-capture errors → explanation + corrected request → re-test | Low–Medium |
 | M8 | Endpoint matching, Field Mapping & Workflow | Pick endpoints for a requirement from imported docs, editable mappings, Mermaid diagram | Medium |

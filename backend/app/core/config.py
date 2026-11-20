@@ -16,11 +16,14 @@ class Settings(BaseSettings):
 
     app_name: str = "My API Integration Assistant"
     environment: str = "development"
-    version: str = "0.4.0"
+    version: str = "0.5.0"
     # Stored as a comma-separated string, e.g. "http://localhost:3000,https://app.example.com"
     cors_origins: str = "http://localhost:3000"
     # SQLite = the whole database is one file. "./data/app.db" is relative to the backend folder.
     database_url: str = "sqlite:///./data/app.db"
+
+    # Request Builder: allow calls to localhost / private network addresses (e.g. a local test server).
+    allow_private_network_requests: bool = False
 
     # --- AI ---
     # SecretStr hides the value if settings are ever printed or logged.

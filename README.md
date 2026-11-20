@@ -58,9 +58,11 @@ pip install -r requirements.txt
 If `frontend/package.json` changed, run `npm install` in `frontend`.
 
 **Start the app** — two PowerShell tabs:
-- Tab 1: `cd backend` → `.venv\Scripts\Activate.ps1` → `uvicorn app.main:app --reload`
+- Tab 1: `cd backend` → `.venv\Scripts\Activate.ps1` → `uvicorn app.main:app --reload --reload-include .env`
 - Tab 2: `cd frontend` → `npm run dev`
 
 **Stop the app:** press `Ctrl + C` in each tab.
+
+Tip: `--reload-include .env` makes the backend restart automatically when you edit `backend\.env`.
 
 Your data lives in `backend/data/app.db`. Deleting that file resets the app to the three starter projects.

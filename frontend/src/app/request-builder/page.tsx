@@ -1,6 +1,11 @@
-import { ComingSoon } from "@/components/ComingSoon";
-import { NAV_ITEMS } from "@/lib/navigation";
+import { Suspense } from "react";
 
-export default function Page() {
-  return <ComingSoon item={NAV_ITEMS.find((item) => item.href === "/request-builder")!} />;
+import { RequestBuilder } from "@/components/RequestBuilder";
+
+export default function RequestBuilderPage() {
+  return (
+    <Suspense fallback={<p className="text-sm text-slate-500">Loading…</p>}>
+      <RequestBuilder />
+    </Suspense>
+  );
 }

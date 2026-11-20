@@ -10,7 +10,7 @@ import { METHOD_STYLE, SOURCE_LABEL, VERIFICATION } from "@/lib/docs";
 
 const PAGE_SIZE = 100;
 
-function EndpointRow({ endpoint, onDelete }: { endpoint: ApiEndpoint; onDelete: () => void }) {
+function EndpointRow({ endpoint, docId, onDelete }: { endpoint: ApiEndpoint; docId: number; onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   return (
     <li className="rounded-lg border border-slate-200 bg-white">
@@ -80,9 +80,17 @@ function EndpointRow({ endpoint, onDelete }: { endpoint: ApiEndpoint; onDelete: 
               {r.example && <pre className="mt-1 max-h-60 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-slate-100">{r.example}</pre>}
             </div>
           ))}
-          <button onClick={onDelete} className="text-xs font-medium text-rose-700 hover:underline">
-            Remove this endpoint
-          </button>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href={`/request-builder?doc=${docId}&endpoint=${endpoint.id}`}
+              className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700"
+            >
+              Try in Request Builder
+            </Link>
+            <button onClick={onDelete} className="text-xs font-medium text-rose-700 hover:underline">
+              Remove this endpoint
+            </button>
+          </div>
         </div>
       )}
     </li>
@@ -236,7 +244,7 @@ export function DocDetail() {
             </p>
             <ul className="space-y-2">
               {filtered.slice(0, limit).map((e) => (
-                <EndpointRow key={e.id} endpoint={e} onDelete={() => removeEndpoint(e)} />
+                <EndpointRow key={e.id} endpoint={e} docId={doc.id} onDelete={() => removeEndpoint(e)} />
               ))}
             </ul>
             {filtered.length > limit && (

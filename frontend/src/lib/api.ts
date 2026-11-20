@@ -201,3 +201,79 @@ export const deleteDoc = (id: number) => request<void>(`/api/docs/${id}`, { meth
 
 export const deleteEndpoint = (docId: number, endpointId: number) =>
   request<void>(`/api/docs/${docId}/endpoints/${endpointId}`, { method: "DELETE" });
+
+// ---------- Request Builder ----------
+
+export type KeyValue = { name: string; value: string; enabled: boolean };
+
+export type AuthConfig = {
+  type: "none" | "bearer" | "basic" | "api_key";
+  token: string;
+  username: string;
+  password: string;
+  key_name: string;
+  key_value: string;
+  key_in: "header" | "query";
+  token_prefix: string;
+};
+
+export type OutgoingRequest = {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
+  url: string;
+  params: KeyValue[];
+  headers: KeyValue[];
+  body_type: "none" | "json" | "text" | "form";
+  body: string;
+  form: KeyValue[];
+  auth: AuthConfig;
+};
+
+export type RunResult = {
+  ok: boolean;
+  status_code: number | null;
+  reason: string;
+  headers: Record<string, string>;
+  body: string;
+  body_truncated: boolean;
+  is_binary: boolean;
+  content_type: string;
+  size_bytes: number;
+  elapsed_ms: number;
+  final_url: string;
+  error_kind: string;
+  error_message: string;
+  history_id: number;
+};
+
+export type HistoryItem = {
+  id: number;
+  project_id: number | null;
+  endpoint_id: number | null;
+  method: string;
+  url: string;
+  status_code: number | null;
+  elapsed_ms: number;
+  error_kind: string;
+  created_at: string;
+};
+
+export type HistoryDetail = HistoryItem & {
+  request: Partial<OutgoingRequest> & { auth: Partial<AuthConfig> };
+  response_headers: Record<string, string>;
+  response_body: string;
+  size_bytes: number;
+  error_message: string;
+};
+
+export const sendRequest = (data: {
+  request: OutgoingRequest;
+  confirm_write: boolean;
+  project_id: number | null;
+  endpoint_id: number | null;
+}) => request<RunResult>("/api/requests/send", { method: "POST", body: JSON.stringify(data) });
+
+export const listHistory = () => request<HistoryItem[]>("/api/requests/history");
+export const getHistory = (id: number) => request<HistoryDetail>(`/api/requests/history/${id}`);
+export const deleteHistory = (id: number) => request<void>(`/api/requests/history/${id}`, { method: "DELETE" });
+export const getRequestStats = () =>
+  request<{ total: number; successful: number; failed: number }>("/api/requests/stats");

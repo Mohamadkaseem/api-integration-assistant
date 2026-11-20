@@ -2,13 +2,13 @@ import Link from "next/link";
 
 import { BackendStatus } from "@/components/BackendStatus";
 import { ProjectCount } from "@/components/ProjectCount";
+import { RequestStat } from "@/components/RequestStats";
 
-// "Saved API requests" and the test-call counts become real in M4 (Request Builder).
 const STATS = [
   { label: "Integration projects", value: <ProjectCount />, href: "/projects" },
-  { label: "Saved API requests", value: "0", href: null },
-  { label: "Successful test calls", value: "0", href: null },
-  { label: "Failed test calls", value: "0", href: null },
+  { label: "API requests sent", value: <RequestStat field="total" />, href: "/request-builder" },
+  { label: "Successful test calls", value: <RequestStat field="successful" />, href: "/request-builder" },
+  { label: "Failed test calls", value: <RequestStat field="failed" />, href: "/request-builder" },
 ];
 
 export default function DashboardPage() {
