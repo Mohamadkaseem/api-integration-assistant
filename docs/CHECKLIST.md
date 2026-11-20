@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M6: real Zoho OAuth (zoho.in, Self Client) connected and refreshed on Windows. Last check: a real Zoho API request.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M6 complete. M6 verified with a real Zoho CRM account. Next: M7 Error Troubleshooter.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -64,7 +64,7 @@
 - [x] 74 backend tests; browser flow tested incl. a real internet request
 - [x] Verified on Windows: real GET to api.github.com → 200 OK
 - [ ] Optional: real Zoho call with an access token
-## M6 — Credentials & OAuth ✅ (built & tested here)
+## M6 — Credentials & OAuth ✅
 - [x] Saved credentials: API key, Bearer token, Basic auth, OAuth 2.0 — secrets encrypted (Fernet) in SQLite
 - [x] Encryption key auto-created in backend/data/credentials.key (git-ignored; back it up) or CREDENTIALS_KEY in .env
 - [x] Secrets never returned to the browser (only a hint like "…a1b2"); edits keep secrets when fields are left blank
@@ -76,7 +76,7 @@
 - [x] Request Builder: "Saved credential" in the Auth tab; production credentials flagged in the write confirmation
 - [x] 85 backend tests; browser flow tested (connect, test connection, use in requests, nothing secret in history or DB)
 - [x] Real Zoho CRM account (zoho.in) connected via Self Client; token refresh works
-- [ ] Send a real Zoho API request with the saved credential
+- [x] Real Zoho CRM API call (GET Accounts) with the saved credential → 200, 3 records
 ## M7 — Error Troubleshooter
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer
 ## M9 — Handover Document Generator

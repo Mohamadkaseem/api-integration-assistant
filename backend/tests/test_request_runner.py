@@ -108,3 +108,9 @@ def test_redact_body_handles_json_form_and_known_secrets():
     assert "Acme" in redact_body('{"data": {"password": "abc", "name": "Acme"}}')
     assert "xyz" not in redact_body("grant_type=refresh_token&refresh_token=xyz")
     assert "MYTOKEN" not in redact_body("plain text mentioning MYTOKEN", ["MYTOKEN"])
+
+
+def test_missing_reason_phrase_gets_standard_text():
+    result = send_request(OutgoingRequest(method="GET", url="https://api.example.com/x"), resolve=public,
+                          transport=mock(lambda r: httpx2.Response(204, extensions={"reason_phrase": b""})))
+    assert result.reason == "No Content"

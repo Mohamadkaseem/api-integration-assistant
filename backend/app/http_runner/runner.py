@@ -11,6 +11,7 @@ Safety rules:
 import base64
 import json
 import time
+from http import HTTPStatus
 from typing import Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -121,6 +122,14 @@ def build_body(req: OutgoingRequest, headers: dict[str, str]) -> dict:
     return {"content": req.body.encode("utf-8")}
 
 
+def _standard_reason(code: int) -> str:
+    """HTTP/2 servers (e.g. Zoho) send no reason text, so use the standard one: 200 -> "OK"."""
+    try:
+        return HTTPStatus(code).phrase
+    except ValueError:
+        return ""
+
+
 def _looks_binary(content_type: str, data: bytes) -> bool:
     if any(t in content_type for t in ("json", "xml", "text", "javascript", "html", "yaml", "x-www-form-urlencoded")):
         return False
@@ -170,7 +179,7 @@ def send_request(
                 return RunResult(
                     ok=True,
                     status_code=response.status_code,
-                    reason=response.reason_phrase,
+                    reason=response.reason_phrase or _standard_reason(response.status_code),
                     headers=dict(response.headers),
                     body=text,
                     body_truncated=truncated,
