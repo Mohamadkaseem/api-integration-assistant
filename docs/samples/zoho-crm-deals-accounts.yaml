@@ -1,0 +1,67 @@
+# Hand-written SAMPLE spec for the tutorial in docs/SAMPLE_USE_CASE.md.
+# Based on the Zoho CRM v3 REST API (Deals / Accounts). It covers only what the
+# tutorial needs - always check the official Zoho CRM API documentation for real projects.
+openapi: 3.0.3
+info:
+  title: Zoho CRM v3 - Deals & Accounts (tutorial sample)
+  version: "3"
+servers:
+  - url: https://www.zohoapis.in/crm/v3
+security:
+  - zoho_oauth: [ZohoCRM.modules.ALL]
+components:
+  securitySchemes:
+    zoho_oauth:
+      type: oauth2
+      description: "Send the access token as: Authorization: Zoho-oauthtoken <token>"
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.zoho.in/oauth/v2/auth
+          tokenUrl: https://accounts.zoho.in/oauth/v2/token
+          scopes:
+            ZohoCRM.modules.ALL: Read and write all CRM modules
+paths:
+  /Deals:
+    get:
+      summary: List deals
+      parameters:
+        - {name: fields, in: query, required: true, schema: {type: string}, description: "Comma-separated field API names, e.g. Deal_Name,Stage,Account_Name"}
+        - {name: per_page, in: query, schema: {type: integer}, description: "Records per page (max 200)"}
+      responses:
+        "200":
+          description: Deals found
+          content:
+            application/json:
+              example: {"data": [{"id": "1460418000002100001", "Deal_Name": "Acme - Annual licence", "Stage": "Closed Won", "Account_Name": {"id": "1460418000002058178", "name": "Infosys"}}], "info": {"more_records": false}}
+        "204":
+          description: No deals
+  /Accounts/{account_id}:
+    parameters:
+      - {name: account_id, in: path, required: true, schema: {type: string}}
+    get:
+      summary: Get one account
+      parameters:
+        - {name: fields, in: query, schema: {type: string}, description: "e.g. Account_Name,Account_Type,Annual_Revenue"}
+      responses:
+        "200":
+          description: The account
+          content:
+            application/json:
+              example: {"data": [{"id": "1460418000002058178", "Account_Name": "Infosys", "Account_Type": "Prospect", "Annual_Revenue": 50000}]}
+    put:
+      summary: Update one account
+      requestBody:
+        content:
+          application/json:
+            example: {"data": [{"Account_Type": "Customer"}]}
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              example: {"data": [{"code": "SUCCESS", "details": {"id": "1460418000002058178"}, "message": "record updated", "status": "success"}]}
+        "400":
+          description: Invalid data
+          content:
+            application/json:
+              example: {"data": [{"code": "INVALID_DATA", "details": {"api_name": "Annual_Revenue", "expected_data_type": "double"}, "message": "invalid data", "status": "error"}]}
