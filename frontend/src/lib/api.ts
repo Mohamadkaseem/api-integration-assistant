@@ -336,3 +336,68 @@ export const getAuthorizeUrl = (id: number) =>
   request<{ url: string; redirect_uri: string }>(`/api/credentials/${id}/oauth/authorize-url`);
 export const refreshOAuth = (id: number) =>
   request<Credential>(`/api/credentials/${id}/oauth/refresh`, { method: "POST" });
+
+// ---------- Error Troubleshooter ----------
+
+export type Diagnosis = {
+  title: string;
+  category: string;
+  explanation: string;
+  likely_causes: string[];
+  suggestions: string[];
+  error_code: string;
+  error_message: string;
+  fields: string[];
+  retryable: boolean;
+  matched: string;
+};
+
+export type TroubleshootContext = {
+  request: Record<string, unknown>;
+  status_code: number | null;
+  response_body: string;
+  response_headers: Record<string, string>;
+  error_kind: string;
+  error_message: string;
+  endpoint_id: number | null;
+  credential_id: number | null;
+};
+
+export type CorrectedRequest = {
+  method: OutgoingRequest["method"];
+  url: string;
+  query: { name: string; value: string }[];
+  headers: { name: string; value: string }[];
+  body_type: OutgoingRequest["body_type"];
+  body: string;
+  changes: string[];
+};
+
+export type TroubleshootAnalysis = {
+  summary: string;
+  likely_cause: string;
+  field_at_fault: string;
+  explanation: string;
+  fix_steps: string[];
+  corrected_request: CorrectedRequest | null;
+  confidence: "high" | "medium" | "low";
+  needs_more_info: string[];
+  used_documentation: boolean;
+};
+
+export type TroubleshootInput = {
+  history_id?: number;
+  status_code?: number | null;
+  response_body?: string;
+  request?: { method: string; url: string; headers: { name: string; value: string }[]; body_type: string; body: string };
+  endpoint_id?: number | null;
+};
+
+export const explainError = (data: TroubleshootInput) =>
+  request<{ diagnosis: Diagnosis; context: TroubleshootContext }>("/api/troubleshoot/explain", { method: "POST", body: JSON.stringify(data) });
+
+export const explainErrorWithAI = (data: TroubleshootInput) =>
+  request<{ diagnosis: Diagnosis; context: TroubleshootContext; analysis: TroubleshootAnalysis }>("/api/troubleshoot/ai", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });

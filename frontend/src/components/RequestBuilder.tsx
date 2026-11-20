@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { KeyValueEditor } from "@/components/KeyValueEditor";
 import { ResponseViewer } from "@/components/ResponseViewer";
+import { TroubleshootPanel } from "@/components/TroubleshootPanel";
 import {
   deleteHistory,
   getDoc,
@@ -24,6 +25,7 @@ import {
   type RunResult,
 } from "@/lib/api";
 import { METHOD_STYLE } from "@/lib/docs";
+import { takePrefill } from "@/lib/prefill";
 import { EMPTY_AUTH, EMPTY_REQUEST, MASK, WRITE_METHODS, findPlaceholders, requestFromEndpoint, toCurl } from "@/lib/requests";
 
 type Tab = "params" | "headers" | "body" | "auth";
@@ -103,7 +105,9 @@ export function RequestBuilder() {
     const docParam = searchParams.get("doc");
     const endpointParam = searchParams.get("endpoint");
     const historyParam = searchParams.get("history");
-    if (docParam && endpointParam) {
+    if (searchParams.get("prefill")) {
+      // handled by the prefill effect below
+    } else if (docParam && endpointParam) {
       getDoc(Number(docParam))
         .then((doc) => {
           setPickerDoc(doc);
@@ -118,6 +122,23 @@ export function RequestBuilder() {
     // Runs once when the page opens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // A request handed over from another screen (e.g. the Troubleshooter's corrected request).
+  // Keyed on the ?prefill= value, so it also works when we are already on this page.
+  const prefillKey = searchParams.get("prefill");
+  useEffect(() => {
+    if (!prefillKey) return;
+    const prefill = takePrefill();
+    if (!prefill) return;
+    Promise.resolve().then(() => {
+      setReq(prefill.request);
+      setCredentialId(prefill.credential_id ? String(prefill.credential_id) : "");
+      setEndpointId(prefill.endpoint_id);
+      setNotice(prefill.note);
+      setResult(null);
+      setTab("body");
+    });
+  }, [prefillKey]);
 
   const placeholders = findPlaceholders(req.url);
   const isWrite = WRITE_METHODS.includes(req.method);
@@ -374,6 +395,12 @@ export function RequestBuilder() {
 
         {error && <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
         {result && <ResponseViewer result={result} />}
+        {result && (!result.ok || (result.status_code ?? 0) >= 400) && (
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold text-slate-900">Troubleshoot this error</h2>
+            <TroubleshootPanel input={{ history_id: result.history_id }} />
+          </section>
+        )}
       </div>
 
       {/* History */}

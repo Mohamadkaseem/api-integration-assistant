@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M6 complete. M6 verified with a real Zoho CRM account. Next: M7 Error Troubleshooter.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M6 complete. M7 built and tested here; waiting for you to test on Windows.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -77,6 +77,15 @@
 - [x] 85 backend tests; browser flow tested (connect, test connection, use in requests, nothing secret in history or DB)
 - [x] Real Zoho CRM account (zoho.in) connected via Self Client; token refresh works
 - [x] Real Zoho CRM API call (GET Accounts) with the saved credential → 200, 3 records
-## M7 — Error Troubleshooter
+## M7 — Error Troubleshooter ✅ (built & tested here)
+- [x] Built-in explanations (no AI, free): HTTP status codes, Zoho codes (INVALID_DATA, MANDATORY_NOT_FOUND, DUPLICATE_DATA, INVALID_TOKEN, OAUTH_SCOPE_MISMATCH, ...), HubSpot categories, OAuth errors, network problems
+- [x] Finds the field at fault (Zoho details.api_name, HubSpot context.propertyName, quoted names in messages) and the expected data type
+- [x] Retry-After and "retrying may work" hints for rate limits and server errors
+- [x] "Troubleshoot this error" under every failed response in the Request Builder
+- [x] Error Troubleshooter page: paste any error, or pick a failed request from history
+- [x] "Explain with AI": Claude gets the REDACTED request + response + built-in diagnosis + imported endpoint docs
+- [x] AI returns cause, field at fault, fix steps, confidence, and a corrected request → "Open in Request Builder"
+- [x] 101 backend tests (incl. secrets never reaching the AI); browser flow tested end to end
+- [ ] **You:** try a failing request (built-in works now); AI part when credit is added
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer
 ## M9 — Handover Document Generator
