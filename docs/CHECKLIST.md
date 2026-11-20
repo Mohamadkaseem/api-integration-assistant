@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M6 built and tested here; waiting for you to test on Windows.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M6: real Zoho OAuth (zoho.in, Self Client) connected and refreshed on Windows. Last check: a real Zoho API request.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -75,7 +75,8 @@
 - [x] Plain-language OAuth errors (invalid_code, invalid_client, redirect mismatch, invalid_grant, ...), incl. Zoho's errors sent with HTTP 200
 - [x] Request Builder: "Saved credential" in the Auth tab; production credentials flagged in the write confirmation
 - [x] 85 backend tests; browser flow tested (connect, test connection, use in requests, nothing secret in history or DB)
-- [ ] **You:** connect a real Zoho account (Self Client) and send a request with it — Project C
+- [x] Real Zoho CRM account (zoho.in) connected via Self Client; token refresh works
+- [ ] Send a real Zoho API request with the saved credential
 ## M7 — Error Troubleshooter
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer
 ## M9 — Handover Document Generator
