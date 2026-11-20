@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M5 built and tested here; waiting for you to test on Windows.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M5 verified on Windows. Next: M6 Credentials & OAuth.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -49,7 +49,7 @@
 - [x] Verified on Windows: 59 tests pass, upload form fixes
 - [ ] **Later (needs credit):** PDF / pasted-text import with real Claude
 
-## M5 — Request Builder & API testing ✅ (built & tested here)
+## M5 — Request Builder & API testing ✅
 - [x] GET / POST / PUT / PATCH / DELETE / HEAD / OPTIONS with query params, headers, JSON / text / form body
 - [x] Auth: Bearer (custom prefix, e.g. Zoho-oauthtoken), Basic, API key in header or query
 - [x] Start from an imported endpoint (URL, params, example body built from the schema; Postman {{variables}} filled)
@@ -62,7 +62,8 @@
 - [x] Copy as cURL with secrets replaced by placeholders
 - [x] Dashboard shows real counts (sent / successful / failed)
 - [x] 74 backend tests; browser flow tested incl. a real internet request
-- [ ] **You:** send a real GET to an API you use (e.g. Zoho with an access token from the Zoho API console)
+- [x] Verified on Windows: real GET to api.github.com → 200 OK
+- [ ] Optional: real Zoho call with an access token
 ## M6 — Credentials & Auth Assistant
 ## M7 — Error Troubleshooter
 ## M8 — Endpoint matching, Field Mapping & Workflow Designer
