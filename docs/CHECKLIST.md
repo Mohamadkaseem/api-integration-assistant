@@ -1,6 +1,6 @@
 # Project Checklist
 
-**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M8 complete (AI parts of M3/M4/M7/M8 await Claude credit). Next: M9 Handover document.
+**Current state:** M4 verified on Windows (spec import, upload fixes). Claude key connects; live AI test of M3/M4 postponed until credit is added. M1–M8 complete; M9 built and tested here. AI parts of M3/M4/M7/M8/M9 await Claude credit.
 
 ## M1 — Foundations ✅
 - [x] Folders: `backend/`, `frontend/`, `docs/`
@@ -101,4 +101,13 @@
 - [x] 112 backend tests; browser flow tested with a fake Claude
 - [x] Verified on Windows: Project A steps added manually, workflow diagram with "waits for" labels
 - [ ] **Later (needs credit):** AI matching and mapping with real docs
-## M9 — Handover Document Generator
+## M9 — Developer Handover Document ✅ (built & tested here)
+- [x] One document per project, assembled without AI: overview, trigger & workflow, endpoints, authentication, mappings, error handling, test cases, sample requests, assumptions & open points
+- [x] Endpoint sections with full URL (Postman {{variables}} filled), parameters, request body, responses, trust level
+- [x] Authentication described from docs and saved credentials — never secrets
+- [x] Test cases generated from the workflow (happy path, every branch, every wait, invalid data, duplicates, token expiry, outage)
+- [x] Open points collected: missing docs, steps without endpoints, assumed mappings, unverified endpoints, open questions
+- [x] Preview page; Word (.docx) export with the workflow diagram as a picture; Markdown export (Mermaid diagram) and copy
+- [x] Optional "Improve with AI": executive summary + extra edge-case test cases
+- [x] 119 backend tests (incl. no secrets in Word/Markdown/AI input); browser flow tested, picture verified inside the .docx
+- [ ] **You:** open a project → Handover doc → download Word and open it

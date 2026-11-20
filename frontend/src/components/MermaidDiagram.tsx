@@ -12,7 +12,7 @@ export function MermaidDiagram({ text }: { text: string }) {
     (async () => {
       try {
         const mermaid = (await import("mermaid")).default;
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral", flowchart: { htmlLabels: true } });
+        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral", htmlLabels: true, flowchart: { htmlLabels: true } });
         const { svg } = await mermaid.render(`diagram-${Date.now()}`, text);
         if (!cancelled && ref.current) {
           ref.current.innerHTML = svg; // Mermaid's own sanitised output (securityLevel: strict)

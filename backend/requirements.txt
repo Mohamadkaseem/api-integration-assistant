@@ -16,6 +16,8 @@ python-multipart==0.0.34
 httpx2==2.16.2
 # Encrypts saved credentials (API keys, tokens, passwords) on disk
 cryptography==50.0.2
+# Creates the Word (.docx) handover document
+python-docx==1.2.0
 # Database toolkit: Python classes <-> SQLite tables (built on SQLAlchemy + Pydantic)
 sqlmodel==0.0.50
 # --- Testing tools ---

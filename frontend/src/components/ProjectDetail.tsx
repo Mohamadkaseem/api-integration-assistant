@@ -86,6 +86,12 @@ export function ProjectDetail() {
               >
                 Integration design
               </Link>
+              <Link
+                href={`/handover?project=${project.id}`}
+                className="rounded-md border border-indigo-300 bg-white px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50"
+              >
+                Handover doc
+              </Link>
               <button
                 onClick={() => setEditing(true)}
                 className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"

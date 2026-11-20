@@ -456,3 +456,64 @@ export const matchEndpointsAI = (projectId: number) =>
   request<Design>(`/api/projects/${projectId}/design/match-endpoints`, { method: "POST" });
 export const suggestMappingsAI = (projectId: number) =>
   request<Design>(`/api/projects/${projectId}/design/suggest-mappings`, { method: "POST" });
+
+// ---------- Handover document ----------
+
+export type HandoverData = {
+  project_name: string;
+  source_app: string;
+  target_app: string;
+  status: string;
+  generated_at: string;
+  requirement: string;
+  notes: string;
+  summary: string;
+  ai_summary: string;
+  trigger: string;
+  expected_outcome: string;
+  steps: DesignStep[];
+  mermaid: string;
+  conditions: string[];
+  status_updates: string[];
+  data_to_transfer: { name: string; from_app: string; to_app: string; notes: string }[];
+  endpoints: {
+    step_orders: number[];
+    app: string;
+    method: string;
+    path: string;
+    full_url: string;
+    summary: string;
+    verification: string;
+    auth: string;
+    parameters: ApiParameter[];
+    request_body: string;
+    responses: { status: string; description: string; example: string }[];
+  }[];
+  authentication: { app: string; source: string; description: string }[];
+  mappings: FieldMapping[];
+  samples: { method: string; url: string; status: string; request_body: string; response_body: string; when: string }[];
+  errors: { code: string; meaning: string; handling: string }[];
+  test_cases: { id: string; title: string; preconditions: string; steps: string; expected: string; source: string }[];
+  assumptions: string[];
+  open_points: string[];
+  has_analysis: boolean;
+  has_design: boolean;
+};
+
+export const getHandover = (projectId: number) =>
+  request<{ data: HandoverData; markdown: string }>(`/api/projects/${projectId}/handover`);
+export const improveHandoverAI = (projectId: number) =>
+  request<{ data: HandoverData; markdown: string }>(`/api/projects/${projectId}/handover/ai`, { method: "POST" });
+
+/** Download a file produced by the backend (Word / Markdown) and save it via the browser. */
+export async function downloadFile(path: string, init: RequestInit, fallbackName: string) {
+  const response = await fetch(`${API_URL}${path}`, init);
+  if (!response.ok) throw new ApiError(response.status, `Download failed (status ${response.status}).`);
+  const name = /filename="([^"]+)"/.exec(response.headers.get("content-disposition") ?? "")?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(url);
+}

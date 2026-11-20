@@ -14,6 +14,7 @@ from app.db import get_session
 from app.models.analysis import AnalysisRecord
 from app.models.api_doc import ApiDocument
 from app.models.design import IntegrationDesign
+from app.models.handover import HandoverNotes
 from app.models.request_log import RequestLog
 from app.models.project import Project, ProjectCreate, ProjectRead, ProjectUpdate, utc_now
 
@@ -68,6 +69,8 @@ def delete_project(project_id: int, session: Session = Depends(get_session)) -> 
     # Delete the project's design and saved analyses too, so nothing is left orphaned.
     for design in session.exec(select(IntegrationDesign).where(IntegrationDesign.project_id == project_id)).all():
         session.delete(design)
+    for notes in session.exec(select(HandoverNotes).where(HandoverNotes.project_id == project_id)).all():
+        session.delete(notes)
     for record in session.exec(select(AnalysisRecord).where(AnalysisRecord.project_id == project_id)).all():
         session.delete(record)
     # Keep imported API documents and request history, but unlink them from the project.

@@ -1,6 +1,8 @@
 # My API Integration Assistant
 
-AI-powered assistant that turns integration requirements into verified integration designs.
+AI-powered personal assistant for API integration projects: requirement analysis, API documentation import,
+a Postman-like request builder, encrypted credentials with OAuth (Zoho + generic), error troubleshooting,
+integration design (endpoints, field mapping, workflow diagram) and developer handover documents (Word / Markdown).
 See [`docs/PLAN.md`](docs/PLAN.md) for the roadmap and [`docs/CHECKLIST.md`](docs/CHECKLIST.md) for progress.
 
 ## Prerequisites

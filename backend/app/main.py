@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from app.ai.provider import AIError
-from app.api.routes import analysis, credentials, design, docs, health, projects, requests, troubleshoot
+from app.api.routes import analysis, credentials, design, docs, handover, health, projects, requests, troubleshoot
 from app.core.config import get_settings
 from app.db import create_db_and_tables, engine
 from app.seed import seed_starter_projects
@@ -48,6 +48,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
+    expose_headers=["Content-Disposition"],  # lets the browser read download file names
 )
 
 
@@ -66,3 +67,4 @@ app.include_router(requests.router, prefix="/api")
 app.include_router(credentials.router, prefix="/api")
 app.include_router(troubleshoot.router, prefix="/api")
 app.include_router(design.router, prefix="/api")
+app.include_router(handover.router, prefix="/api")
