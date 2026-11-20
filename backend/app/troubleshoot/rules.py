@@ -233,7 +233,9 @@ def _from(entry, **extra) -> Diagnosis:
 
 def diagnose(status_code: int | None, body: str = "", error_kind: str = "", error_message: str = "",
              method: str = "", headers: dict[str, str] | None = None) -> Diagnosis:
-    if status_code is None:
+    # No status code AND no response body = the server never answered (network problem).
+    # No status code but a pasted body = the user just didn't type the status: read the body.
+    if status_code is None and (error_kind or not (body or "").strip()):
         entry = NETWORK.get(error_kind or "connection", NETWORK["connection"])
         return _from(entry, error_message=error_message, matched=f"network:{error_kind}")
 
@@ -252,6 +254,12 @@ def diagnose(status_code: int | None, body: str = "", error_kind: str = "", erro
         mapped = HUBSPOT.get(info.hubspot_category)
         if mapped and mapped in KNOWN:
             diagnosis = _from(KNOWN[mapped], error_code=info.hubspot_category, matched=f"hubspot:{info.hubspot_category}", **common)
+        elif status_code is None:
+            diagnosis = Diagnosis(
+                title="Error response", category="unknown", matched="body-only",
+                explanation="The error code was not recognised. Adding the status code (e.g. 400) gives a better explanation.",
+                suggestions=["Read the server's message below", "Use 'Explain with AI' for a deeper look"], **common,
+            )
         elif mapped == "_404" or status_code in STATUS:
             entry = STATUS.get(404 if mapped == "_404" else status_code)
             diagnosis = _from(entry, error_code=info.codes[0] if info.codes else "", matched=f"status:{status_code}", **common)

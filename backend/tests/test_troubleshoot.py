@@ -39,6 +39,14 @@ def test_unknown_body_falls_back_to_status_and_retry_after():
     assert diagnose(503, "").retryable
 
 
+def test_pasted_body_without_status_code_is_read():
+    """Regression: an empty status code was treated as a network failure."""
+    d = diagnose(None, '{"data":[{"code":"MANDATORY_NOT_FOUND","details":{"api_name":"Last_Name"},"message":"required field not found"}]}')
+    assert d.error_code == "MANDATORY_NOT_FOUND" and d.fields == ["Last_Name"]
+    unknown = diagnose(None, '{"message": "something odd"}')
+    assert unknown.matched == "body-only" and unknown.error_message == "something odd"
+
+
 def test_network_errors():
     assert diagnose(None, error_kind="dns").title == "Server name not found"
     assert "ALLOW_PRIVATE_NETWORK_REQUESTS" in diagnose(None, error_kind="blocked").suggestions[0]
